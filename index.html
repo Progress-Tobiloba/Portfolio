@@ -1183,17 +1183,16 @@ function applyAboutPhoto(url) {
 }
 
 // ── DOCUMENTS (CV + CERTS) ──
-// For PDFs/docs — upload as raw resource type
 async function uploadDoc(file, publicId) {
   const fd = new FormData();
   fd.append('file', file);
   fd.append('upload_preset', UPLOAD_PRESET);
   fd.append('public_id', publicId);
-  // for non-image files use resource_type auto
   const url = `https://api.cloudinary.com/v1_1/${CLOUD_NAME}/auto/upload`;
   const res = await fetch(url, { method: 'POST', body: fd });
   const data = await res.json();
   if (data.secure_url) return data.secure_url;
+  console.error('Cloudinary error:', data);
   throw new Error(data.error?.message || 'Upload failed');
 }
 
@@ -1208,7 +1207,7 @@ async function handleDoc(e, previewId, btnId, storeKey, publicId) {
     STORE.set(storeKey + '_name', file.name);
     applyDoc(previewId, btnId, file.name, url);
   } catch(err) {
-    setStatus(preview, '❌ Upload failed. Try again.', '#F43F5E');
+    setStatus(preview, '❌ ' + err.message, '#F43F5E');
   }
 }
 
@@ -1218,6 +1217,7 @@ function applyDoc(previewId, btnId, name, url) {
   setStatus(preview, '✓ ' + name, '#34D399');
   btn.href = url;
   btn.target = '_blank';
+  btn.rel = 'noopener';
   btn.style.display = 'inline-block';
 }
 
