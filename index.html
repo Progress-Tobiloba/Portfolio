@@ -1221,28 +1221,29 @@ function applyDoc(previewId, btnId, name, url) {
   btn.style.display = 'inline-block';
 }
 
+// ── HARDCODED LIVE ASSETS (visible to every visitor, not just uploader) ──
+const LIVE_ASSETS = {
+  about_photo: `https://res.cloudinary.com/${CLOUD_NAME}/image/upload/portfolio_about_photo.png`,
+  cv:    { url: `https://res.cloudinary.com/${CLOUD_NAME}/raw/upload/portfolio_cv.docx`,       name: 'Progress_Tobiloba_Resume.docx' },
+  cert1: { url: `https://res.cloudinary.com/${CLOUD_NAME}/image/upload/portfolio_cert1.pdf`,   name: 'Claude Code Certificate.pdf' },
+  cert2: { url: `https://res.cloudinary.com/${CLOUD_NAME}/image/upload/portfolio_cert2.pdf`,   name: 'Coursera Web Design Certificate.pdf' },
+  cert3: { url: `https://res.cloudinary.com/${CLOUD_NAME}/image/upload/portfolio_cert3.png`,   name: 'Kaggle Community Member Certificate.png' },
+};
+
 // ── RESTORE ON PAGE LOAD ──
 window.addEventListener('DOMContentLoaded', () => {
-  // Hero photo
+  // About photo — always show the live hardcoded one
+  applyAboutPhoto(LIVE_ASSETS.about_photo);
+
+  // Documents — always show the live hardcoded ones
+  applyDoc('cvName', 'cvBtn', LIVE_ASSETS.cv.name, LIVE_ASSETS.cv.url);
+  applyDoc('c1Name', 'c1Btn', LIVE_ASSETS.cert1.name, LIVE_ASSETS.cert1.url);
+  applyDoc('c2Name', 'c2Btn', LIVE_ASSETS.cert2.name, LIVE_ASSETS.cert2.url);
+  applyDoc('c3Name', 'c3Btn', LIVE_ASSETS.cert3.name, LIVE_ASSETS.cert3.url);
+
+  // Hero photo — still session-based (skipped per request)
   const heroUrl = STORE.get('hero_photo');
   if (heroUrl) applyHeroPhoto(heroUrl);
-
-  // About photo
-  const aboutUrl = STORE.get('about_photo');
-  if (aboutUrl) applyAboutPhoto(aboutUrl);
-
-  // Documents
-  const docs = [
-    { store: 'cv',    previewId: 'cvName',  btnId: 'cvBtn'  },
-    { store: 'cert1', previewId: 'c1Name',  btnId: 'c1Btn'  },
-    { store: 'cert2', previewId: 'c2Name',  btnId: 'c2Btn'  },
-    { store: 'cert3', previewId: 'c3Name',  btnId: 'c3Btn'  },
-  ];
-  docs.forEach(d => {
-    const url = STORE.get(d.store);
-    const name = STORE.get(d.store + '_name');
-    if (url && name) applyDoc(d.previewId, d.btnId, name, url);
-  });
 });
 
 // ── MOBILE NAV ──
